@@ -3,8 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { loginSchema, type LoginFormValues } from '@/lib/validation/auth';
 import { useLogin } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/Button';
+import { Input, Label, FieldError } from '@/components/ui/Input';
+import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 
-// Functional but unstyled — the real login screen design lands in Phase 6.
 export function LoginPage() {
   const login = useLogin();
   const {
@@ -14,28 +16,36 @@ export function LoginPage() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   return (
-    <div className="mx-auto max-w-sm py-16">
-      <h1 className="mb-6 text-xl font-semibold">Log in</h1>
-      <form
-        noValidate
-        className="flex flex-col gap-3"
-        onSubmit={handleSubmit((values) => login.mutate(values))}
-      >
-        <div>
-          <input placeholder="Email" type="email" className="w-full border p-2" {...register('email')} />
-          {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
-        </div>
-        <div>
-          <input placeholder="Password" type="password" className="w-full border p-2" {...register('password')} />
-          {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
-        </div>
-        {login.isError && <p className="text-sm text-red-600">Invalid email or password.</p>}
-        <button type="submit" disabled={login.isPending} className="border p-2">
-          {login.isPending ? 'Logging in…' : 'Log in'}
-        </button>
-      </form>
-      <p className="mt-4 text-sm">
-        No account? <Link to="/register">Register</Link>
+    <div className="mx-auto max-w-sm px-6 py-16">
+      <Card>
+        <CardHeader className="flex-col items-start pb-1">
+          <h1 className="text-xl font-semibold text-foreground">Log in</h1>
+          <p className="text-sm text-foreground-muted">Welcome back to your circles.</p>
+        </CardHeader>
+        <CardBody>
+          <form noValidate className="flex flex-col gap-4" onSubmit={handleSubmit((values) => login.mutate(values))}>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" autoComplete="email" {...register('email')} />
+              <FieldError>{errors.email?.message}</FieldError>
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" autoComplete="current-password" {...register('password')} />
+              <FieldError>{errors.password?.message}</FieldError>
+            </div>
+            {login.isError && <FieldError>Invalid email or password.</FieldError>}
+            <Button type="submit" loading={login.isPending} className="mt-1">
+              Log in
+            </Button>
+          </form>
+        </CardBody>
+      </Card>
+      <p className="mt-4 text-center text-sm text-foreground-muted">
+        No account?{' '}
+        <Link to="/register" className="font-medium text-primary">
+          Register
+        </Link>
       </p>
     </div>
   );

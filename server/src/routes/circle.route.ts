@@ -11,7 +11,9 @@ router.use(requireAuth);
 
 router.post('/', validateBody(createCircleSchema), circleController.createCircle);
 router.get('/', circleController.listMyCircles);
-router.post('/:id/join', validateBody(joinCircleSchema), circleController.joinCircle);
+// Not nested under /:id — a joining user only has an invite code, not the
+// circle's database id, so the invite code alone has to resolve the circle.
+router.post('/join', validateBody(joinCircleSchema), circleController.joinCircle);
 
 router.get('/:id', loadCircle, requireCircleMember, circleController.getCircle);
 router.get('/:id/members', loadCircle, requireCircleMember, circleController.listMembers);

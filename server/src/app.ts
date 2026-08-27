@@ -15,6 +15,16 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
+// Render/Railway (and most PaaS hosts) terminate TLS at their edge and
+// forward requests over plain HTTP internally, adding an X-Forwarded-For
+// hop. Without this, express-rate-limit v7 throws on that header (it
+// refuses to trust X-Forwarded-For unless the app explicitly says how many
+// proxy hops to trust), and `secure`-cookie/req.protocol detection would be
+// wrong. `1` trusts exactly one hop, matching these platforms' topology.
+if (env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 app.use(
   cors({

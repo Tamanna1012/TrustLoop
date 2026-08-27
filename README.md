@@ -2,7 +2,7 @@
 
 Digital lending circles — transparent group savings with a real ledger, automated payout rotation, and a trust score every member can see.
 
-> **Verification status:** every phase below has been typechecked, linted, and unit-tested (32 tests, mocked models — see [Testing](#testing)). The database-backed paths and full end-to-end flow (register → create circle → join → activate → contribute → payout) have **not** been run against a real MongoDB yet — this development sandbox cannot reach one (see [Known limitations](#known-limitations)). Don't treat this app as production-verified until that smoke test has actually passed.
+> **Verification status:** every phase below has been typechecked, linted, and unit-tested (32 tests, mocked models — see [Testing](#testing)). The database-backed paths and full end-to-end flow (register → create circle → join → activate → contribute → payout) have **not** been run against a real MongoDB yet — this development sandbox cannot reach one (see [Known limitations](#known-limitations)). Deployment configuration for Vercel/Render/Atlas is prepared and documented ([`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)) but **not deployed** — nothing here has run against a live hosted instance. Don't treat this app as production-verified until the real deployment checklist in that doc has actually passed.
 
 ## Table of contents
 
@@ -107,14 +107,20 @@ npm run dev:client   # http://localhost:5173
 
 ## Environment variables
 
-See [`server/.env.example`](server/.env.example) for the full list with inline comments. Summary:
+Server: see [`server/.env.example`](server/.env.example) for the full list with inline comments. Summary:
 
 | Variable | Required | Notes |
 |---|---|---|
 | `MONGODB_URI` | Yes | Atlas connection string |
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Yes | 32+ characters, generate with `openssl rand -base64 48` |
-| `CLIENT_ORIGIN` | Yes | Comma-separated allowed frontend origins for CORS |
+| `CLIENT_ORIGIN` | Yes in production | Comma-separated allowed frontend origins for CORS. Has a `localhost:5173` default for local dev, but the app **refuses to boot in production without this set explicitly** — a silent CORS misconfiguration is worse than a loud startup failure |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | No | Test-mode keys; omit to keep admin-confirmed-only contributions |
+
+Client: see [`client/.env.example`](client/.env.example).
+
+| Variable | Required | Notes |
+|---|---|---|
+| `VITE_API_URL` | Yes in production | Backend's full origin + `/api`, e.g. `https://trustloop-api.onrender.com/api`. Unset locally — Vite's dev proxy handles it (see `vite.config.ts`) |
 
 ## API reference
 
@@ -173,18 +179,21 @@ client/src/
 
 - **No live database test yet.** This was built in a sandboxed environment whose network policy blocks both MongoDB binary downloads and raw-TCP database connections (confirmed, not assumed — see commit history on the `claude/mern-portfolio-project-zj2gar` branch for what was actually tried). The full flow needs to be run against a real MongoDB Atlas cluster before this is production-trustworthy.
 - No E2E test suite (Playwright/Cypress) — blocked by the same database gap.
-- Not yet deployed.
+- **Not yet deployed.** Deployment *configuration* is prepared (build commands, env vars, Vercel/Render settings, the cross-site cookie fix — see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)) and locally verified where that's possible without live accounts, but none of it has been confirmed against an actual running Vercel/Render deployment. Don't read "deployment-ready" as "deployed."
+- No Razorpay webhook — payment confirmation relies solely on the client calling back after checkout completes. See `docs/DEPLOYMENT.md` for why, and what closing that gap would take.
 
 ## Roadmap
 
-- Run the real-database smoke test (see above) and fix whatever it surfaces
+- Run the real-database smoke test ([`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) has the exact checklist) and fix whatever it surfaces
 - E2E tests once a database is reachable
-- Deploy: frontend → Vercel, backend → Render/Railway, DB → MongoDB Atlas
+- Actually deploy (frontend → Vercel, backend → Render, DB → MongoDB Atlas) and confirm the checklist above passes for real
+- Razorpay webhook as a fallback confirmation path
 - Email reminders before due dates
 - Bidding-based payout as an alternative to round-robin
 
 ## More docs
 
 - [`docs/API.md`](docs/API.md) — full endpoint reference
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — exact steps to deploy to Vercel + Render + Atlas, and the post-deploy verification checklist
 - [`docs/RESUME.md`](docs/RESUME.md) — resume title + bullets for this project
 - [`docs/INTERVIEW_PREP.md`](docs/INTERVIEW_PREP.md) — 70 interview questions (technical, architecture, MongoDB, React, Node/Express, project-specific), each pointing at the actual code it's about

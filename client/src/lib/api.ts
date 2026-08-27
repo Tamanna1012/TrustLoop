@@ -1,8 +1,15 @@
 import axios, { isAxiosError, type AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
+// Falls back to '/api' (routed through Vite's dev proxy — see vite.config.ts)
+// when unset, so local dev needs no configuration. In production the
+// frontend (Vercel) and backend (Render/Railway) are on different domains,
+// so VITE_API_URL must be set to the backend's full origin, e.g.
+// https://trustloop-api.onrender.com/api — see client/.env.example.
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -36,7 +43,7 @@ let refreshPromise: Promise<string | null> | null = null;
 async function refreshAccessToken(): Promise<string | null> {
   try {
     const res = await axios.post<{ data: { accessToken: string } }>(
-      '/api/auth/refresh',
+      `${API_BASE_URL}/auth/refresh`,
       {},
       { withCredentials: true }
     );

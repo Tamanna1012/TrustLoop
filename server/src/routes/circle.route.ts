@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import { loadCircle, requireCircleAdmin, requireCircleMember } from '../middleware/circleAccess.js';
 import { validateBody } from '../middleware/validate.js';
@@ -10,6 +11,16 @@ import * as disputeController from '../controllers/dispute.controller.js';
 import * as paymentController from '../controllers/payment.controller.js';
 
 const router = Router();
+
+// Tighter than the blanket /api limit — order creation and signature
+// verification touch real money (even in test mode) and are worth
+// rate-limiting on their own regardless of what else is happening on the API.
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 router.use(requireAuth);
 
@@ -35,12 +46,14 @@ router.post(
 
 router.post(
   '/:id/cycles/:cycleId/payment-order',
+  paymentLimiter,
   loadCircle,
   requireCircleMember,
   paymentController.createPaymentOrder
 );
 router.post(
   '/:id/cycles/:cycleId/payment-verify',
+  paymentLimiter,
   loadCircle,
   requireCircleMember,
   validateBody(verifyPaymentSchema),

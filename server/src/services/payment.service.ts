@@ -58,7 +58,15 @@ export async function verifyAndRecordPayment(
     .update(`${razorpayOrderId}|${razorpayPaymentId}`)
     .digest('hex');
 
-  if (expectedSignature !== razorpaySignature) {
+  // Constant-time comparison — a plain !== leaks how many leading bytes
+  // matched through response-time differences, which is exactly the kind
+  // of side channel signature verification exists to avoid.
+  const expected = Buffer.from(expectedSignature, 'hex');
+  const actual = Buffer.from(razorpaySignature, 'hex');
+  const isValidSignature =
+    expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+
+  if (!isValidSignature) {
     throw ApiError.badRequest('Payment verification failed — signature mismatch');
   }
 

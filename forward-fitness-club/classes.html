@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classes &amp; Schedule — Forward Fitness Club</title>
+<meta name="description" content="Browse Forward Fitness Club's class catalogue and weekly schedule — strength, HIIT, yoga, boxing and more.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">FF</span>
+      Forward<span style="color:var(--color-primary)">Fitness</span>
+    </a>
+
+    <nav class="nav-menu" id="nav-menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="classes.html">Classes</a>
+      <a href="trainers.html">Trainers</a>
+      <a href="membership.html">Membership</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <a href="membership.html" class="btn btn-primary nav-cta">Join Now</a>
+
+    <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Classes &amp; Schedule</span>
+      <h1>Find your next session</h1>
+      <p class="breadcrumb"><a href="index.html">Home</a> / Classes</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Class Catalogue</span>
+        <h2>Filter by category</h2>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn is-active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="strength">Strength</button>
+        <button class="filter-btn" data-filter="cardio">Cardio</button>
+        <button class="filter-btn" data-filter="mind-body">Mind &amp; Body</button>
+        <button class="filter-btn" data-filter="dance">Dance</button>
+      </div>
+
+      <div class="grid grid-3">
+
+        <div class="card class-card reveal" data-category="strength">
+          <span class="tag">Strength</span>
+          <div class="icon">🏋️</div>
+          <h3>CrossFit Power</h3>
+          <p>High-intensity functional training combining Olympic lifts, gymnastics and conditioning.</p>
+          <div class="class-meta"><span>⏱ 50 min</span><span>🔥 High intensity</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="strength">
+          <span class="tag">Strength</span>
+          <div class="icon">🏋️‍♀️</div>
+          <h3>Barbell Strength</h3>
+          <p>Progressive squat, bench and deadlift programming for building raw strength safely.</p>
+          <div class="class-meta"><span>⏱ 60 min</span><span>💪 Moderate–High</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="cardio">
+          <span class="tag">Cardio</span>
+          <div class="icon">🥊</div>
+          <h3>Boxing Conditioning</h3>
+          <p>Bag work, pad drills and footwork that torches calories while sharpening technique.</p>
+          <div class="class-meta"><span>⏱ 40 min</span><span>🔥 High intensity</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="cardio">
+          <span class="tag">Cardio</span>
+          <div class="icon">⚡</div>
+          <h3>HIIT Circuit</h3>
+          <p>Fast-paced interval stations mixing bodyweight, sled and dumbbell movements.</p>
+          <div class="class-meta"><span>⏱ 30 min</span><span>🔥 High intensity</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="mind-body">
+          <span class="tag">Mind &amp; Body</span>
+          <div class="icon">🧘</div>
+          <h3>Power Yoga</h3>
+          <p>Build flexibility, core strength and calm focus with a dynamic vinyasa flow.</p>
+          <div class="class-meta"><span>⏱ 45 min</span><span>🌿 All levels</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="mind-body">
+          <span class="tag">Mind &amp; Body</span>
+          <div class="icon">🌬️</div>
+          <h3>Mobility &amp; Recovery</h3>
+          <p>Guided stretching and breathwork to speed recovery between hard training days.</p>
+          <div class="class-meta"><span>⏱ 30 min</span><span>🌿 All levels</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="dance">
+          <span class="tag">Dance</span>
+          <div class="icon">💃</div>
+          <h3>Zumba Blast</h3>
+          <p>A full-body dance party set to Latin and pop rhythms — no dance experience required.</p>
+          <div class="class-meta"><span>⏱ 45 min</span><span>🌿 All levels</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="strength">
+          <span class="tag">Strength</span>
+          <div class="icon">🦵</div>
+          <h3>Leg Day Lab</h3>
+          <p>Lower-body focused strength and hypertrophy work for stronger squats and sprints.</p>
+          <div class="class-meta"><span>⏱ 50 min</span><span>💪 Moderate–High</span></div>
+        </div>
+
+        <div class="card class-card reveal" data-category="cardio">
+          <span class="tag">Cardio</span>
+          <div class="icon">🚣</div>
+          <h3>Row &amp; Ride</h3>
+          <p>A rower/bike interval class built for sustainable cardio gains without joint stress.</p>
+          <div class="class-meta"><span>⏱ 40 min</span><span>💪 Moderate</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Weekly Schedule</span>
+        <h2>Pick a day, book your spot</h2>
+      </div>
+
+      <div class="schedule-tabs">
+        <button class="filter-btn is-active" data-day="all">All Days</button>
+        <button class="filter-btn" data-day="mon">Monday</button>
+        <button class="filter-btn" data-day="tue">Tuesday</button>
+        <button class="filter-btn" data-day="wed">Wednesday</button>
+        <button class="filter-btn" data-day="thu">Thursday</button>
+        <button class="filter-btn" data-day="fri">Friday</button>
+        <button class="filter-btn" data-day="sat">Saturday</button>
+      </div>
+
+      <div class="schedule-table-wrap">
+        <table class="schedule">
+          <thead>
+            <tr><th>Day</th><th>Time</th><th>Class</th><th>Category</th><th>Coach</th></tr>
+          </thead>
+          <tbody>
+            <tr data-day="mon"><td>Monday</td><td>6:00 AM</td><td class="class-name">CrossFit Power</td><td class="tag-cell">Strength</td><td>Marcus</td></tr>
+            <tr data-day="mon"><td>Monday</td><td>9:00 AM</td><td class="class-name">Power Yoga</td><td class="tag-cell">Mind &amp; Body</td><td>Priya</td></tr>
+            <tr data-day="mon"><td>Monday</td><td>6:00 PM</td><td class="class-name">HIIT Circuit</td><td class="tag-cell">Cardio</td><td>Jordan</td></tr>
+            <tr data-day="tue"><td>Tuesday</td><td>6:30 AM</td><td class="class-name">Barbell Strength</td><td class="tag-cell">Strength</td><td>Marcus</td></tr>
+            <tr data-day="tue"><td>Tuesday</td><td>5:30 PM</td><td class="class-name">Boxing Conditioning</td><td class="tag-cell">Cardio</td><td>Sofia</td></tr>
+            <tr data-day="wed"><td>Wednesday</td><td>6:00 AM</td><td class="class-name">CrossFit Power</td><td class="tag-cell">Strength</td><td>Marcus</td></tr>
+            <tr data-day="wed"><td>Wednesday</td><td>7:00 PM</td><td class="class-name">Zumba Blast</td><td class="tag-cell">Dance</td><td>Ana</td></tr>
+            <tr data-day="thu"><td>Thursday</td><td>6:30 AM</td><td class="class-name">Leg Day Lab</td><td class="tag-cell">Strength</td><td>Marcus</td></tr>
+            <tr data-day="thu"><td>Thursday</td><td>9:00 AM</td><td class="class-name">Mobility &amp; Recovery</td><td class="tag-cell">Mind &amp; Body</td><td>Priya</td></tr>
+            <tr data-day="fri"><td>Friday</td><td>6:00 PM</td><td class="class-name">HIIT Circuit</td><td class="tag-cell">Cardio</td><td>Jordan</td></tr>
+            <tr data-day="fri"><td>Friday</td><td>7:00 PM</td><td class="class-name">Row &amp; Ride</td><td class="tag-cell">Cardio</td><td>Jordan</td></tr>
+            <tr data-day="sat"><td>Saturday</td><td>9:00 AM</td><td class="class-name">Power Yoga</td><td class="tag-cell">Mind &amp; Body</td><td>Priya</td></tr>
+            <tr data-day="sat"><td>Saturday</td><td>10:30 AM</td><td class="class-name">Boxing Conditioning</td><td class="tag-cell">Cardio</td><td>Sofia</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band reveal">
+        <h2>Ready to book your spot?</h2>
+        <p>Members can reserve classes up to 7 days in advance from the member app.</p>
+        <a href="membership.html" class="btn btn-primary">Become a Member</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="logo"><span class="logo-mark">FF</span>Forward Fitness</a>
+        <p>A modern strength &amp; conditioning gym focused on real coaching and lasting results.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="classes.html">Classes</a></li>
+          <li><a href="trainers.html">Trainers</a></li>
+          <li><a href="membership.html">Membership</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="contact.html#faq">FAQs</a></li>
+          <li><a href="membership.html">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Stay Updated</h4>
+        <p>Weekly tips and class announcements. No spam.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="you@example.com" required aria-label="Email address">
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span class="current-year"></span> Forward Fitness Club. All rights reserved.</span>
+      <span>123 Momentum Ave, Springfield · (555) 012-3456</span>
+    </div>
+  </div>
+</footer>
+
+<button class="back-to-top" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>

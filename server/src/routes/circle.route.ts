@@ -4,8 +4,10 @@ import { loadCircle, requireCircleAdmin, requireCircleMember } from '../middlewa
 import { validateBody } from '../middleware/validate.js';
 import { createCircleSchema, joinCircleSchema, contributionSchema } from '../schemas/circle.schema.js';
 import { createDisputeSchema, resolveDisputeSchema } from '../schemas/dispute.schema.js';
+import { verifyPaymentSchema } from '../schemas/payment.schema.js';
 import * as circleController from '../controllers/circle.controller.js';
 import * as disputeController from '../controllers/dispute.controller.js';
+import * as paymentController from '../controllers/payment.controller.js';
 
 const router = Router();
 
@@ -29,6 +31,20 @@ router.post(
   requireCircleAdmin,
   validateBody(contributionSchema),
   circleController.recordContribution
+);
+
+router.post(
+  '/:id/cycles/:cycleId/payment-order',
+  loadCircle,
+  requireCircleMember,
+  paymentController.createPaymentOrder
+);
+router.post(
+  '/:id/cycles/:cycleId/payment-verify',
+  loadCircle,
+  requireCircleMember,
+  validateBody(verifyPaymentSchema),
+  paymentController.verifyPayment
 );
 
 router.post(

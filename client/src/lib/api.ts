@@ -1,10 +1,21 @@
-import axios, { type AxiosRequestConfig } from 'axios';
+import axios, { isAxiosError, type AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
 export const api = axios.create({
   baseURL: '/api',
   withCredentials: true,
 });
+
+/** Backend errors follow {status:'error', error:{message}} — surface that
+ * message instead of Axios's generic "Request failed with status code N". */
+export function getApiErrorMessage(err: unknown, fallback = 'Something went wrong'): string {
+  if (isAxiosError(err)) {
+    const message = (err.response?.data as { error?: { message?: string } } | undefined)?.error?.message;
+    if (typeof message === 'string' && message.length > 0) return message;
+  }
+  if (err instanceof Error) return err.message;
+  return fallback;
+}
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;

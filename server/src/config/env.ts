@@ -9,7 +9,12 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  CLIENT_ORIGIN: z.string().default('http://localhost:5173')
+  CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
+
+  // Optional: payments work in admin-confirmed mode without these. Set both
+  // to enable real (test-mode) Razorpay checkout for self-service contributions.
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional()
 });
 
 const parsed = envSchema.safeParse(process.env);

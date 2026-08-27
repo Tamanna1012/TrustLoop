@@ -11,6 +11,8 @@ import {
   useRecordContribution,
 } from '@/hooks/useCircles';
 import { useDisputes, useCreateDispute, useResolveDispute } from '@/hooks/useDisputes';
+import { usePayContribution } from '@/hooks/usePayment';
+import { getApiErrorMessage } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -139,6 +141,7 @@ export function CircleDetailPage() {
               circleId={circleId}
               members={members ?? []}
               isAdmin={isAdmin}
+              currentUserId={user?.id}
               collectingCycleId={collectingCycle?._id}
               contributedUserIds={new Set(
                 (transactions ?? [])
@@ -220,16 +223,20 @@ function MembersTab({
   circleId,
   members,
   isAdmin,
+  currentUserId,
   collectingCycleId,
   contributedUserIds,
 }: {
   circleId: string;
   members: import('@/types/circle').Member[];
   isAdmin: boolean;
+  currentUserId?: string;
   collectingCycleId?: string;
   contributedUserIds: Set<string>;
 }) {
   const recordContribution = useRecordContribution(circleId, collectingCycleId ?? '');
+  const payContribution = usePayContribution(circleId, collectingCycleId ?? '');
+  const [payError, setPayError] = useState<string | null>(null);
 
   if (members.length === 0) {
     return <EmptyState icon={CircleDollarSign} title="No members yet" />;
@@ -244,12 +251,13 @@ function MembersTab({
             <th className="px-4 py-3 font-medium">Trust</th>
             <th className="px-4 py-3 font-medium">Payout position</th>
             <th className="px-4 py-3 font-medium">Status</th>
-            {isAdmin && collectingCycleId && <th className="px-4 py-3" />}
+            {collectingCycleId && <th className="px-4 py-3" />}
           </tr>
         </thead>
         <tbody>
           {members.map((member) => {
             const hasContributed = contributedUserIds.has(member.userId._id);
+            const isSelf = member.userId._id === currentUserId;
             return (
               <tr key={member._id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-medium text-foreground">{member.userId.name}</td>
@@ -264,17 +272,36 @@ function MembersTab({
                     <Badge tone="neutral">Pending</Badge>
                   )}
                 </td>
-                {isAdmin && collectingCycleId && (
+                {collectingCycleId && (
                   <td className="px-4 py-3 text-right">
                     {!hasContributed && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        loading={recordContribution.isPending}
-                        onClick={() => recordContribution.mutate(member.userId._id)}
-                      >
-                        Mark paid
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        {isSelf && (
+                          <Button
+                            size="sm"
+                            loading={payContribution.isPending}
+                            onClick={() => {
+                              setPayError(null);
+                              payContribution.mutate(undefined, {
+                                onError: (err) =>
+                                  setPayError(getApiErrorMessage(err, 'Payment failed')),
+                              });
+                            }}
+                          >
+                            Pay online
+                          </Button>
+                        )}
+                        {isAdmin && (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            loading={recordContribution.isPending}
+                            onClick={() => recordContribution.mutate(member.userId._id)}
+                          >
+                            Mark paid
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </td>
                 )}
@@ -283,6 +310,7 @@ function MembersTab({
           })}
         </tbody>
       </table>
+      {payError && <p className="mt-3 text-sm text-destructive">{payError}</p>}
     </div>
   );
 }

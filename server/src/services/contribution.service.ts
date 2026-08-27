@@ -11,7 +11,8 @@ import { formatCurrency } from '../utils/format.js';
 export async function recordContribution(
   circleId: string,
   cycleId: string,
-  targetUserId: string
+  targetUserId: string,
+  paymentReference?: string
 ): Promise<{ transaction: TransactionDoc; cycle: CycleDoc }> {
   const circle = await Circle.findById(circleId);
   if (!circle) {
@@ -39,7 +40,8 @@ export async function recordContribution(
       userId: targetUserId,
       type: 'contribution',
       amount: circle.contributionAmount,
-      status: 'completed'
+      status: 'completed',
+      paymentReference
     });
   } catch (err) {
     if (isDuplicateKeyError(err)) {

@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 
 import { env } from './config/env.js';
 import healthRoute from './routes/health.route.js';
+import authRoute from './routes/auth.route.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(
 );
 
 app.use('/api/health', healthRoute);
+app.use('/api/auth', authRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

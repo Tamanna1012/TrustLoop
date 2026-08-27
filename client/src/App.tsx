@@ -1,34 +1,46 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-
-interface HealthResponse {
-  status: string;
-  data: {
-    message: string;
-    timestamp: string;
-  };
-}
+import { Routes, Route } from 'react-router-dom';
+import { useAuthBootstrap } from '@/hooks/useAuthBootstrap';
+import { ProtectedRoute, PlatformAdminRoute } from '@/components/ProtectedRoute';
+import { PublicLayout } from '@/layouts/PublicLayout';
+import { AppLayout } from '@/layouts/AppLayout';
+import { LandingPage } from '@/pages/LandingPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
+import { DashboardPage } from '@/pages/DashboardPage';
+import { CircleDetailPage } from '@/pages/CircleDetailPage';
+import { CreateCirclePage } from '@/pages/CreateCirclePage';
+import { JoinCirclePage } from '@/pages/JoinCirclePage';
+import { ProfilePage } from '@/pages/ProfilePage';
+import { AdminPage } from '@/pages/AdminPage';
+import { NotFoundPage } from '@/pages/NotFoundPage';
 
 function App() {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['health'],
-    queryFn: async () => {
-      const res = await api.get<HealthResponse>('/health');
-      return res.data.data;
-    },
-  });
+  useAuthBootstrap();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-3 px-4 text-center">
-      <h1 className="text-3xl font-semibold" style={{ color: 'var(--color-teal)' }}>
-        TrustLoop
-      </h1>
-      <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-        {isLoading && 'Checking API connection…'}
-        {isError && 'API unreachable — is the server running on :5000?'}
-        {data && `${data.message} · ${new Date(data.timestamp).toLocaleTimeString()}`}
-      </p>
-    </main>
+    <Routes>
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/circles/new" element={<CreateCirclePage />} />
+          <Route path="/circles/join" element={<JoinCirclePage />} />
+          <Route path="/circles/:id" element={<CircleDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+
+          <Route element={<PlatformAdminRoute />}>
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

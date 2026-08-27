@@ -5,6 +5,8 @@ import { Transaction, type TransactionDoc } from '../models/transaction.model.js
 import { ApiError } from '../utils/ApiError.js';
 import { isDuplicateKeyError } from '../utils/mongoErrors.js';
 import { adjustTrustScore } from './trust.service.js';
+import { createNotification } from './notification.service.js';
+import { formatCurrency } from '../utils/format.js';
 
 export async function recordContribution(
   circleId: string,
@@ -68,6 +70,11 @@ export async function recordContribution(
     await Membership.updateOne(
       { circleId, userId: cycle.payoutRecipient },
       { hasReceivedPayout: true }
+    );
+    await createNotification(
+      cycle.payoutRecipient.toString(),
+      'payout',
+      `You received your payout of ${formatCurrency(cycle.totalCollected)} from "${circle.name}".`
     );
 
     const nextCycle = await Cycle.findOne({ circleId, cycleNumber: cycle.cycleNumber + 1 });

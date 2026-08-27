@@ -3,6 +3,7 @@ import { LayoutDashboard, PlusCircle, UserRound, ShieldCheck, LogOut } from 'luc
 import { useAuthStore } from '@/store/authStore';
 import { useLogout } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
+import { NotificationBell } from '@/components/NotificationBell';
 import { cn } from '@/lib/cn';
 
 const navItems = [
@@ -18,7 +19,10 @@ export function AppLayout() {
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-surface px-4 py-6">
-        <div className="mb-8 px-2 font-display text-lg font-semibold text-primary">TrustLoop</div>
+        <div className="mb-8 flex items-center justify-between px-2">
+          <span className="font-display text-lg font-semibold text-primary">TrustLoop</span>
+          <NotificationBell />
+        </div>
 
         <nav className="flex flex-1 flex-col gap-1">
           {navItems.map(({ to, label, icon: Icon }) => (

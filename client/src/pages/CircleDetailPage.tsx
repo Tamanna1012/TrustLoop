@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { Copy, Check, CircleDollarSign } from 'lucide-react';
+import { Copy, Check, CircleDollarSign, MessageSquareWarning } from 'lucide-react';
 import {
   useCircle,
   useMembers,
@@ -9,18 +10,28 @@ import {
   useActivateCircle,
   useRecordContribution,
 } from '@/hooks/useCircles';
+import { useDisputes, useCreateDispute, useResolveDispute } from '@/hooks/useDisputes';
 import { useAuthStore } from '@/store/authStore';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Modal } from '@/components/ui/Modal';
 import { circleStatusTone, circleStatusLabel, cycleStatusTone, cycleStatusLabel } from '@/lib/status';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
 import { cn } from '@/lib/cn';
+import type { Dispute } from '@/types/dispute';
 
-const TABS = ['overview', 'members', 'ledger'] as const;
+const TABS = ['overview', 'members', 'ledger', 'disputes'] as const;
 type Tab = (typeof TABS)[number];
+
+const disputeStatusTone = {
+  open: 'accent',
+  underReview: 'accent',
+  resolved: 'success',
+  rejected: 'destructive',
+} as const;
 
 export function CircleDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -36,6 +47,7 @@ export function CircleDetailPage() {
   const activateCircle = useActivateCircle(circleId);
 
   const isAdmin = circle?.createdBy === user?.id;
+  const isPlatformAdmin = user?.role === 'platformAdmin';
 
   const collectingCycle = useMemo(() => cycles?.find((c) => c.status === 'collecting'), [cycles]);
 
@@ -142,6 +154,10 @@ export function CircleDetailPage() {
           ) : (
             <LedgerTab transactions={transactions ?? []} />
           ))}
+
+        {tab === 'disputes' && (
+          <DisputesTab circleId={circleId} canResolve={isAdmin || isPlatformAdmin} />
+        )}
       </div>
     </div>
   );
@@ -302,6 +318,95 @@ function LedgerTab({ transactions }: { transactions: import('@/types/circle').Le
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function DisputesTab({ circleId, canResolve }: { circleId: string; canResolve: boolean }) {
+  const { data: disputes, isLoading } = useDisputes(circleId);
+  const createDispute = useCreateDispute(circleId);
+  const resolveDispute = useResolveDispute(circleId);
+  const [modalOpen, setModalOpen] = useState(false);
+  const { register, handleSubmit, reset } = useForm<{ description: string }>();
+
+  if (isLoading) return <Skeleton className="h-48" />;
+
+  return (
+    <div>
+      <div className="mb-4 flex justify-end">
+        <Button size="sm" variant="secondary" onClick={() => setModalOpen(true)}>
+          Raise a dispute
+        </Button>
+      </div>
+
+      {(!disputes || disputes.length === 0) ? (
+        <EmptyState icon={MessageSquareWarning} title="No disputes" description="Hopefully it stays that way." />
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {disputes.map((dispute: Dispute) => (
+            <li key={dispute._id}>
+              <Card>
+                <CardBody className="pt-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm text-foreground">{dispute.description}</p>
+                      <p className="mt-1.5 text-xs text-foreground-faint">
+                        Raised by {typeof dispute.raisedBy === 'string' ? dispute.raisedBy : dispute.raisedBy.name} ·{' '}
+                        {formatDateTime(dispute.createdAt)}
+                      </p>
+                    </div>
+                    <Badge tone={disputeStatusTone[dispute.status]}>{dispute.status}</Badge>
+                  </div>
+                  {canResolve && (dispute.status === 'open' || dispute.status === 'underReview') && (
+                    <div className="mt-3 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        loading={resolveDispute.isPending}
+                        onClick={() => resolveDispute.mutate({ disputeId: dispute._id, status: 'resolved' })}
+                      >
+                        Mark resolved
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        loading={resolveDispute.isPending}
+                        onClick={() => resolveDispute.mutate({ disputeId: dispute._id, status: 'rejected' })}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  )}
+                </CardBody>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Raise a dispute">
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={handleSubmit(({ description }) => {
+            createDispute.mutate(description, {
+              onSuccess: () => {
+                reset();
+                setModalOpen(false);
+              },
+            });
+          })}
+        >
+          <textarea
+            rows={4}
+            placeholder="What happened? Be specific — this goes to the circle admin."
+            className="w-full rounded-md border border-border bg-surface p-3 text-sm text-foreground placeholder:text-foreground-faint"
+            {...register('description', { required: true, minLength: 10 })}
+          />
+          <Button type="submit" loading={createDispute.isPending}>
+            Submit
+          </Button>
+        </form>
+      </Modal>
     </div>
   );
 }

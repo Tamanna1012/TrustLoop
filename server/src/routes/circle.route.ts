@@ -3,7 +3,9 @@ import { requireAuth } from '../middleware/auth.middleware.js';
 import { loadCircle, requireCircleAdmin, requireCircleMember } from '../middleware/circleAccess.js';
 import { validateBody } from '../middleware/validate.js';
 import { createCircleSchema, joinCircleSchema, contributionSchema } from '../schemas/circle.schema.js';
+import { createDisputeSchema, resolveDisputeSchema } from '../schemas/dispute.schema.js';
 import * as circleController from '../controllers/circle.controller.js';
+import * as disputeController from '../controllers/dispute.controller.js';
 
 const router = Router();
 
@@ -27,6 +29,21 @@ router.post(
   requireCircleAdmin,
   validateBody(contributionSchema),
   circleController.recordContribution
+);
+
+router.post(
+  '/:id/disputes',
+  loadCircle,
+  requireCircleMember,
+  validateBody(createDisputeSchema),
+  disputeController.createDispute
+);
+router.get('/:id/disputes', loadCircle, requireCircleMember, disputeController.listDisputes);
+router.patch(
+  '/:id/disputes/:disputeId',
+  loadCircle,
+  validateBody(resolveDisputeSchema),
+  disputeController.resolveDispute
 );
 
 export default router;

@@ -23,5 +23,13 @@ transactionSchema.pre('findOneAndUpdate', blockMutation);
 transactionSchema.pre('deleteOne', blockMutation);
 transactionSchema.pre('findOneAndDelete', blockMutation);
 
+// A member can only contribute once per cycle — enforced at the DB level
+// (not just in application code) so a race between two requests can't
+// double-record the same payment.
+transactionSchema.index(
+  { cycleId: 1, userId: 1, type: 1 },
+  { unique: true, partialFilterExpression: { type: 'contribution' } }
+);
+
 export type TransactionDoc = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
 export const Transaction = model('Transaction', transactionSchema);
